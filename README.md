@@ -23,4 +23,4 @@ docker compose up --build
 - Postgres: `fleet` / `fleet` / `secret` on port 5432
 - Redis: port 6379
 
-Postgres is the assessment database. Redis is in Compose because seat locking will use it later — not as a cache of availability.
+Postgres is the assessment database. Redis is in Compose because seat locking will use it later — not for sessions or as a cache of availability. Laravel sessions stay on the `file` driver so `GET /` does not require Redis.

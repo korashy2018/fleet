@@ -41,7 +41,7 @@ services:
       DB_PASSWORD: secret
       REDIS_HOST: redis
       CACHE_STORE: redis
-      SESSION_DRIVER: redis
+      SESSION_DRIVER: file
       QUEUE_CONNECTION: sync
     depends_on:
       postgres:
