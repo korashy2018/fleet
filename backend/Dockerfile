@@ -1,4 +1,4 @@
-FROM php:8.4-cli-bookworm AS php
+FROM php:8.4-fpm-bookworm AS php
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -7,6 +7,7 @@ RUN apt-get update \
         libpq-dev \
         libzip-dev \
         libicu-dev \
+        libfcgi-bin \
         postgresql-client \
         $PHPIZE_DEPS \
     && docker-php-ext-configure intl \
@@ -34,24 +35,22 @@ FROM php AS app
 COPY . .
 COPY --from=vendor /var/www/html/vendor ./vendor
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY docker/php-fpm/zz-fleet.conf /usr/local/etc/php-fpm.d/zz-fleet.conf
 
-RUN cp .env.example .env \
-    && composer dump-autoload --optimize --no-scripts \
+RUN composer dump-autoload --optimize --no-scripts \
     && chmod +x /usr/local/bin/entrypoint.sh \
-    && useradd --uid 1000 --create-home --shell /bin/bash fleet \
     && mkdir -p \
         storage/framework/cache/data \
         storage/framework/sessions \
         storage/framework/views \
         storage/logs \
         bootstrap/cache \
-    && chown -R fleet:fleet /var/www/html
+    && chown -R www-data:www-data /var/www/html
 
-USER fleet
+EXPOSE 9000
 
-EXPOSE 8000
-
-HEALTHCHECK --interval=10s --timeout=5s --start-period=45s --retries=8 \
-    CMD php -r "exit((@file_get_contents('http://127.0.0.1:8000/up') === false) ? 1 : 0);"
+HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=8 \
+    CMD SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET \
+        cgi-fcgi -bind -connect 127.0.0.1:9000 || exit 1
 
 ENTRYPOINT ["entrypoint.sh"]

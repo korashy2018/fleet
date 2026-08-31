@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: fleet
       POSTGRES_PASSWORD: secret
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -18,7 +18,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -28,36 +28,37 @@ services:
   api:
     build:
       context: ./backend
-    ports:
-      - "8000:8000"
-    environment:
-      APP_NAME: Fleet
-      APP_URL: http://localhost:8000
-      DB_CONNECTION: pgsql
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_DATABASE: fleet
-      DB_USERNAME: fleet
-      DB_PASSWORD: secret
-      REDIS_HOST: redis
-      CACHE_STORE: redis
-      SESSION_DRIVER: file
-      QUEUE_CONNECTION: sync
+    env_file:
+      - path: backend/.env
+        required: true
+    expose:
+      - "${API_PORT:-9000}"
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
 
+  nginx:
+    build:
+      context: ./backend
+      dockerfile: docker/nginx/Dockerfile
+    ports:
+      - "${NGINX_PORT:-8000}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
   web:
     build:
       context: ./frontend
+    env_file:
+      - path: frontend/.env
+        required: true
     ports:
-      - "3000:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000
+      - "${WEB_PORT:-3000}:3000"
     depends_on:
-      api:
+      nginx:
         condition: service_healthy
 
 volumes:

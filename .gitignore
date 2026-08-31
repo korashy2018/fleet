@@ -4,6 +4,7 @@ Thumbs.db
 .env
 .env.backup
 .env.*.local
+compose.env
 
 backend/vendor/
 backend/node_modules/
