@@ -117,11 +117,6 @@ export function BookingWorkspace() {
         <div className="space-y-2">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Fleet</p>
           <h1 className="text-4xl font-semibold tracking-tight">Book a seat</h1>
-          <p className="max-w-xl text-muted">
-            Choose a trip and segment, then pick one of twelve seats. A taken seat on an overlapping
-            leg comes back as a conflict — we clear the selection and refresh availability. Sign in
-            is optional; a Bearer token stamps <code>user_id</code> on the booking.
-          </p>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2">
           <div className="flex flex-wrap items-start justify-end gap-2">
