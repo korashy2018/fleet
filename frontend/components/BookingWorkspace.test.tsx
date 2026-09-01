@@ -10,9 +10,12 @@ vi.mock("../lib/api", () => ({
   listTrips: vi.fn(),
   listAvailableSeats: vi.fn(),
   bookSeat: vi.fn(),
+  login: vi.fn(),
+  register: vi.fn(),
 }));
 
 import { bookSeat, listAvailableSeats, listTrips } from "../lib/api";
+import { useAuthStore } from "../lib/authStore";
 
 const trip: Trip = {
   id: 1,
@@ -83,6 +86,7 @@ describe("BookingWorkspace", () => {
     vi.mocked(bookSeat).mockReset();
     vi.mocked(listTrips).mockResolvedValue([trip]);
     vi.mocked(listAvailableSeats).mockResolvedValue(seats());
+    useAuthStore.getState().clearSession();
   });
 
   it("shows a loading state while seats are fetched", async () => {
@@ -176,5 +180,18 @@ describe("BookingWorkspace", () => {
     });
     expect(screen.getByRole("button", { name: "1" })).not.toHaveClass("bg-seat-selected");
     expect(vi.mocked(listAvailableSeats)).toHaveBeenCalledTimes(2);
+  });
+
+  it("prefills passenger fields from the signed-in user", async () => {
+    useAuthStore.getState().setSession("1|secret", {
+      id: 1,
+      name: "Omar Hassan",
+      email: "omar@example.com",
+    });
+    renderWorkspace();
+
+    expect(await screen.findByLabelText("Name")).toHaveValue("Omar Hassan");
+    expect(screen.getByLabelText("Email")).toHaveValue("omar@example.com");
+    expect(screen.getByText(/linked to your account/i)).toBeInTheDocument();
   });
 });
