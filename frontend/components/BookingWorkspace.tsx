@@ -23,11 +23,20 @@ export function BookingWorkspace() {
   const [confirmation, setConfirmation] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user === null) {
+    if (user !== null) {
+      setName(user.name);
+      setEmail(user.email);
       return;
     }
-    setName(user.name);
-    setEmail(user.email);
+
+    setTripId("");
+    setStartStationId("");
+    setEndStationId("");
+    setSeatNumber(null);
+    setName("");
+    setEmail("");
+    setConflict(null);
+    setConfirmation(null);
   }, [user]);
 
   const trip = useMemo(
