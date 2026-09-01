@@ -20,6 +20,8 @@ final class BookingController extends Controller
 
     public function store(StoreBookingRequest $request): JsonResponse
     {
+        $user = $request->user('sanctum');
+
         $booking = $this->bookSeat->handle(
             (int) $request->validated('trip_id'),
             (int) $request->validated('start_station_id'),
@@ -29,6 +31,7 @@ final class BookingController extends Controller
                 (string) $request->validated('passenger.name'),
                 (string) $request->validated('passenger.email'),
             ),
+            $user === null ? null : (int) $user->id,
         );
 
         return response()->json(['data' => $this->payload($booking)], 201);
@@ -47,6 +50,7 @@ final class BookingController extends Controller
             'end_station_id' => $booking->endStationId,
             'start_position' => $booking->segment->startPosition,
             'end_position' => $booking->segment->endPosition,
+            'user_id' => $booking->userId,
             'passenger' => [
                 'name' => $booking->passenger->name,
                 'email' => $booking->passenger->email,

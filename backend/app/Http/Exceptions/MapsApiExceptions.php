@@ -10,6 +10,7 @@ use Fleet\Domain\Bus\InvalidSeat;
 use Fleet\Domain\Trip\InvalidSegment;
 use Fleet\Domain\Trip\StationNotOnTrip;
 use Fleet\Domain\Trip\TripNotFound;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -35,6 +36,7 @@ final class MapsApiExceptions
                 422,
                 $exception->errors(),
             ),
+            $exception instanceof AuthenticationException => $this->error('unauthenticated', 'Authentication is required.', 401),
             $exception instanceof TripNotFound => $this->error('trip_not_found', $exception->getMessage(), 404),
             $exception instanceof StationNotOnTrip => $this->error('invalid_station', $exception->getMessage(), 422),
             $exception instanceof InvalidSegment => $this->error('invalid_station_order', $exception->getMessage(), 422),
