@@ -32,6 +32,17 @@ export type Booking = {
   };
 };
 
+export type User = {
+  id: number;
+  name: string;
+  email: string;
+};
+
+export type AuthPayload = {
+  token: string;
+  user: User;
+};
+
 export type ApiErrorBody = {
   code: string;
   message: string;
