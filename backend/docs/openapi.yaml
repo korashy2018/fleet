@@ -1,0 +1,95 @@
+openapi: 3.0.3
+info:
+  title: Fleet Booking API
+  version: 1.0.0
+  description: Guest booking for Egypt city bus trips. Seat identity is (bus, number 1–12).
+servers:
+  - url: http://localhost:8000/api/v1
+paths:
+  /trips:
+    get:
+      summary: List trips
+      responses:
+        '200':
+          description: Catalog of trips with ordered stations
+  /trips/{trip}:
+    get:
+      summary: Get a trip
+      parameters:
+        - in: path
+          name: trip
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Trip with ordered stations
+        '404':
+          description: trip_not_found
+  /trips/{trip}/available-seats:
+    get:
+      summary: Seat grid for a segment
+      parameters:
+        - in: path
+          name: trip
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: start_station_id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: end_station_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Twelve seats with available true/false
+        '404':
+          description: trip_not_found
+        '422':
+          description: validation_error, invalid_station, or invalid_station_order
+  /bookings:
+    post:
+      summary: Book a seat on a trip segment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [trip_id, start_station_id, end_station_id, seat_number, passenger]
+              properties:
+                trip_id:
+                  type: integer
+                start_station_id:
+                  type: integer
+                end_station_id:
+                  type: integer
+                seat_number:
+                  type: integer
+                  minimum: 1
+                  maximum: 12
+                passenger:
+                  type: object
+                  required: [name, email]
+                  properties:
+                    name:
+                      type: string
+                    email:
+                      type: string
+                      format: email
+      responses:
+        '201':
+          description: Booking created
+        '404':
+          description: trip_not_found
+        '409':
+          description: seat_unavailable
+        '422':
+          description: validation_error, invalid_station, invalid_station_order, or invalid_seat
+        '503':
+          description: lock_unavailable

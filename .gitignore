@@ -6,7 +6,7 @@ Thumbs.db
 .env.*.local
 compose.env
 
-docs/
+/docs/
 
 backend/vendor/
 backend/node_modules/
