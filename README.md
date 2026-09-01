@@ -30,6 +30,8 @@ docker compose --env-file compose.env up --build
 | `backend/.env` | App key, database, Redis, session, cache |
 | `frontend/.env` | `NEXT_PUBLIC_API_URL` |
 
+If `APP_KEY` is empty, the API entrypoint generates a key, **writes it into** `backend/.env` (bind-mounted), and exports it for PHP-FPM. Later restarts read that file and keep the same key.
+
 If you change `NGINX_PORT`, update `APP_URL` and `NEXT_PUBLIC_API_URL` to match. Postgres user/password in Compose must match `DB_*` in `backend/.env`.
 
 - API: http://localhost:8000 (Nginx → PHP-FPM)
