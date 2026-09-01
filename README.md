@@ -86,6 +86,18 @@ php artisan test tests/Feature/Booking/RedisSeatLockTest.php
 
 The Redis lock test skips if Redis is not reachable on `127.0.0.1`. With Compose up, map `REDIS_HOST` for that one case or run it against the published Redis port.
 
+```bash
+cd frontend
+npm test
+npm run test:coverage
+```
+
+Coverage writes `frontend/coverage/lcov.info`. CI fails if statements, branches, functions, or lines drop below **75%**. In Cursor: Testing sidebar → **Run Tests with Coverage**, or open the HTML report at `frontend/coverage/index.html`. With Compose:
+
+```bash
+docker compose exec web npm run test:coverage
+```
+
 ## Notes
 
 Postgres is the assessment database. Redis is the **seat lock**, not a session store and not an availability cache. `SESSION_DRIVER=file`. If Redis is down, booking fails closed (`503` / `lock_unavailable`).
