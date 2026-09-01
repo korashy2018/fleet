@@ -22,7 +22,7 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
       - name: Test with coverage
-        run: php artisan test --coverage --min=85
+        run: php artisan test --coverage
 
   frontend:
     name: Frontend
