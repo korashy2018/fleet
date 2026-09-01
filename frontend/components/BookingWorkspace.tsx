@@ -1,13 +1,16 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { bookSeat, listAvailableSeats, listTrips } from "../lib/api";
 import { ApiError, type Station, type Trip } from "../lib/types";
+import { AuthPanel } from "./auth";
 import { ThemeToggle } from "./theme";
+import { useAuthStore } from "../lib/authStore";
 
 export function BookingWorkspace() {
   const queryClient = useQueryClient();
+  const user = useAuthStore((state) => state.user);
   const tripsQuery = useQuery({ queryKey: ["trips"], queryFn: listTrips });
 
   const [tripId, setTripId] = useState<number | "">("");
@@ -18,6 +21,14 @@ export function BookingWorkspace() {
   const [email, setEmail] = useState("");
   const [conflict, setConflict] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user === null) {
+      return;
+    }
+    setName(user.name);
+    setEmail(user.email);
+  }, [user]);
 
   const trip = useMemo(
     () => tripsQuery.data?.find((item: Trip) => item.id === tripId),
@@ -45,7 +56,9 @@ export function BookingWorkspace() {
     onSuccess: (booking) => {
       setConflict(null);
       setConfirmation(
-        `Booked seat ${booking.seat_number} on trip ${booking.trip_id} (booking #${booking.id}).`,
+        `Booked seat ${booking.seat_number} on trip ${booking.trip_id} (booking #${booking.id}).${
+          booking.user_id === null ? "" : " Linked to your account."
+        }`,
       );
       setSeatNumber(null);
       void queryClient.invalidateQueries({ queryKey: ["seats"] });
@@ -97,10 +110,16 @@ export function BookingWorkspace() {
           <h1 className="text-4xl font-semibold tracking-tight">Book a seat</h1>
           <p className="max-w-xl text-muted">
             Choose a trip and segment, then pick one of twelve seats. A taken seat on an overlapping
-            leg comes back as a conflict — we clear the selection and refresh availability.
+            leg comes back as a conflict — we clear the selection and refresh availability. Sign in
+            is optional; a Bearer token stamps <code>user_id</code> on the booking.
           </p>
         </div>
-        <ThemeToggle />
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          <div className="flex flex-wrap items-start justify-end gap-2">
+            <AuthPanel />
+            <ThemeToggle />
+          </div>
+        </div>
       </header>
 
       {tripsQuery.isError && (
@@ -242,6 +261,10 @@ export function BookingWorkspace() {
             />
           </label>
         </div>
+
+        {user !== null && (
+          <p className="text-sm text-muted">This booking will be linked to your account.</p>
+        )}
 
         {conflict && (
           <p className="rounded-xl border-2 border-warn-fg/30 bg-warn-bg px-3 py-2 text-sm text-warn-fg">

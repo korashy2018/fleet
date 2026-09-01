@@ -1,8 +1,14 @@
-import { ApiError, type Booking, type Seat, type Trip } from "./types";
+import { useAuthStore } from "./authStore";
+import { ApiError, type AuthPayload, type Booking, type Seat, type Trip, type User } from "./types";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 type Envelope<T> = { data: T } | { error: { code: string; message: string; details?: Record<string, string[]> } };
+
+function authHeaders(): Record<string, string> {
+  const token = useAuthStore.getState().token;
+  return token === null ? {} : { Authorization: `Bearer ${token}` };
+}
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${baseUrl}/api/v1${path}`, {
@@ -10,6 +16,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
+      ...authHeaders(),
       ...init?.headers,
     },
   });
@@ -65,4 +72,22 @@ export function bookSeat(input: {
       },
     }),
   });
+}
+
+export function login(email: string, password: string): Promise<AuthPayload> {
+  return request<AuthPayload>("/login", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+export function register(name: string, email: string, password: string): Promise<AuthPayload> {
+  return request<AuthPayload>("/register", {
+    method: "POST",
+    body: JSON.stringify({ name, email, password }),
+  });
+}
+
+export function me(): Promise<User> {
+  return request<User>("/me");
 }
