@@ -54,7 +54,10 @@ paths:
           description: validation_error, invalid_station, or invalid_station_order
   /bookings:
     post:
-      summary: Book a seat on a trip segment
+      summary: Book a seat on a trip segment (guest or Bearer)
+      security:
+        - {}
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -93,3 +96,66 @@ paths:
           description: validation_error, invalid_station, invalid_station_order, or invalid_seat
         '503':
           description: lock_unavailable
+  /register:
+    post:
+      summary: Register and receive a Sanctum token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+      responses:
+        '201':
+          description: Token and user
+        '422':
+          description: validation_error
+  /login:
+    post:
+      summary: Exchange credentials for a Sanctum token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Token and user
+        '401':
+          description: invalid_credentials
+        '422':
+          description: validation_error
+  /me:
+    get:
+      summary: Current user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Authenticated user
+        '401':
+          description: unauthenticated
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum
