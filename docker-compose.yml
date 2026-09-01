@@ -61,6 +61,15 @@ services:
         required: true
     ports:
       - "${WEB_PORT:-3000}:3000"
+    volumes:
+      - ./frontend/app:/app/app
+      - ./frontend/components:/app/components
+      - ./frontend/lib:/app/lib
+      - ./frontend/public:/app/public
+      - ./frontend/next.config.ts:/app/next.config.ts
+      - ./frontend/postcss.config.mjs:/app/postcss.config.mjs
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+      - ./frontend/.env:/app/.env
     depends_on:
       nginx:
         condition: service_healthy
