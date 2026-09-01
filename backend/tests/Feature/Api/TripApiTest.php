@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
-use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\Fixtures\EgyptCatalog;
 use Tests\TestCase;
 
 final class TripApiTest extends TestCase
@@ -17,28 +17,29 @@ final class TripApiTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(DatabaseSeeder::class);
+        EgyptCatalog::seed();
+        EgyptCatalog::occupySeatFiveCairoToMinya();
     }
 
     #[Test]
     public function it_lists_trips_with_ordered_stations(): void
     {
-        $response = $this->getJson('/api/v1/trips');
-
-        $response->assertOk()
-            ->assertJsonPath('data.0.id', 1)
+        $this->getJson('/api/v1/trips')
+            ->assertOk()
+            ->assertJsonPath('data.0.id', EgyptCatalog::TRIP_CAIRO_ASYUT)
             ->assertJsonPath('data.0.name', 'Cairo to Asyut')
             ->assertJsonPath('data.0.seat_count', 12)
             ->assertJsonPath('data.0.stations.0.name', 'Cairo')
+            ->assertJsonPath('data.1.id', EgyptCatalog::TRIP_VIA_GIZA)
             ->assertJsonPath('data.1.name', 'Cairo to Asyut via Giza');
     }
 
     #[Test]
     public function it_shows_a_trip(): void
     {
-        $this->getJson('/api/v1/trips/1')
+        $this->getJson('/api/v1/trips/'.EgyptCatalog::TRIP_CAIRO_ASYUT)
             ->assertOk()
-            ->assertJsonPath('data.id', 1)
+            ->assertJsonPath('data.id', EgyptCatalog::TRIP_CAIRO_ASYUT)
             ->assertJsonPath('data.stations.2.name', 'Al Minya');
     }
 
@@ -51,19 +52,38 @@ final class TripApiTest extends TestCase
     }
 
     #[Test]
-    public function it_marks_seeded_seat_five_unavailable_cairo_to_minya(): void
+    public function occupied_seat_five_is_unavailable_cairo_to_minya(): void
     {
-        $this->getJson('/api/v1/trips/1/available-seats?start_station_id=1&end_station_id=4')
+        $this->assertDatabaseHas('bookings', [
+            'trip_id' => EgyptCatalog::TRIP_CAIRO_ASYUT,
+            'seat_number' => 5,
+            'start_station_id' => EgyptCatalog::CAIRO,
+            'end_station_id' => EgyptCatalog::MINYA,
+        ]);
+
+        $seats = $this->getJson(sprintf(
+            '/api/v1/trips/%d/available-seats?start_station_id=%d&end_station_id=%d',
+            EgyptCatalog::TRIP_CAIRO_ASYUT,
+            EgyptCatalog::CAIRO,
+            EgyptCatalog::MINYA,
+        ))
             ->assertOk()
-            ->assertJsonPath('data.seats.4.number', 5)
-            ->assertJsonPath('data.seats.4.available', false)
-            ->assertJsonPath('data.seats.5.available', true);
+            ->json('data.seats');
+
+        $available = [];
+
+        foreach ($seats as $seat) {
+            $available[$seat['number']] = $seat['available'];
+        }
+
+        $this->assertFalse($available[5]);
+        $this->assertTrue($available[6]);
     }
 
     #[Test]
     public function it_rejects_available_seats_without_stations(): void
     {
-        $this->getJson('/api/v1/trips/1/available-seats')
+        $this->getJson('/api/v1/trips/'.EgyptCatalog::TRIP_CAIRO_ASYUT.'/available-seats')
             ->assertUnprocessable()
             ->assertJsonPath('error.code', 'validation_error');
     }
