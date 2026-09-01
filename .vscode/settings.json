@@ -1,0 +1,8 @@
+{
+  "vitest.enable": true,
+  "vitest.configSearchPatternInclude": "frontend/**",
+  "vitest.workspaceConfig": "frontend/vitest.config.ts",
+  "testing.automaticallyOpenTestResults": "openOnTestStart",
+  "coverage-gutters.coverageBaseDir": "./frontend/coverage",
+  "coverage-gutters.coverageFileNames": ["lcov.info"]
+}
