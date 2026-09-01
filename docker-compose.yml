@@ -32,7 +32,9 @@ services:
       - path: backend/.env
         required: true
     volumes:
-      - ./backend/.env:/var/www/html/.env
+      - ./backend:/var/www/html
+      - ./backend/docker/php/opcache.ini:/usr/local/etc/php/conf.d/zz-opcache.ini
+    entrypoint: ["bash", "/var/www/html/docker/entrypoint.sh"]
     expose:
       - "${API_PORT:-9000}"
     depends_on:

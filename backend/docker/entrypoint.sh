@@ -40,4 +40,7 @@ if [ -z "${APP_KEY:-}" ]; then
     export APP_KEY
 fi
 
+php artisan migrate --force --no-interaction
+php artisan db:seed --force --no-interaction
+
 exec php-fpm -F
