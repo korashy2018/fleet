@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
+use App\Models\User;
 use Fleet\Application\Booking\LockUnavailable;
 use Fleet\Domain\Booking\SeatLock;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -34,7 +35,8 @@ final class BookingApiTest extends TestCase
             ->assertJsonPath('data.seat_number', 6)
             ->assertJsonPath('data.start_station_id', EgyptCatalog::CAIRO)
             ->assertJsonPath('data.end_station_id', EgyptCatalog::MINYA)
-            ->assertJsonPath('data.passenger.email', 'omar@example.com');
+            ->assertJsonPath('data.passenger.email', 'omar@example.com')
+            ->assertJsonPath('data.user_id', null);
     }
 
     #[Test]
@@ -115,6 +117,22 @@ final class BookingApiTest extends TestCase
         $this->postJson('/api/v1/bookings', ['trip_id' => EgyptCatalog::TRIP_CAIRO_ASYUT])
             ->assertUnprocessable()
             ->assertJsonPath('error.code', 'validation_error');
+    }
+
+    #[Test]
+    public function it_attaches_the_authenticated_user_to_the_booking(): void
+    {
+        $user = User::factory()->create();
+
+        $this->withToken($user->createToken('api')->plainTextToken)
+            ->postJson('/api/v1/bookings', $this->cairoToMinya(seatNumber: 6))
+            ->assertCreated()
+            ->assertJsonPath('data.user_id', $user->id);
+
+        $this->assertDatabaseHas('bookings', [
+            'seat_number' => 6,
+            'user_id' => $user->id,
+        ]);
     }
 
     /**
