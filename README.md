@@ -50,7 +50,7 @@ docker compose --env-file compose.env down -v   # drop Postgres data too
 - API: http://localhost:8000/api/v1
 - **Swagger UI:** http://localhost:8000/docs
 - OpenAPI YAML: http://localhost:8000/docs/openapi.yaml
-- Web: http://localhost:3000 — guest booking workspace
+- Web: http://localhost:3000 — guest booking; optional sign-in
 - Postgres / Redis: ports from `compose.env`
 
 ## API
@@ -123,6 +123,16 @@ flowchart TB
 ```
 
 `User` / Sanctum stay Laravel-shaped: register, login, `/me`, and an optional Bearer on `POST /bookings` that stamps `user_id`. Guest booking does not go through that model.
+
+### Optional sign-in
+
+Guest booking is the default. The header can sign in or create an account against `POST /login` and `POST /register`.
+
+The Sanctum access token lives in a **Zustand store in memory**. It is not written to `localStorage`, `sessionStorage`, or a cookie. Refresh, a new tab, or Sign out drops it. While it is present, `POST /bookings` sends `Authorization: Bearer` and the API stamps `user_id`.
+
+That is a deliberate assessment tradeoff, not a vault. XSS on the page can still read the token from JS. A production SPA with a separate API would use a BFF: short-lived access token in memory, **httpOnly refresh cookie**, silent rotate. The Laravel API still issues a long-lived PAT; we did not add refresh tokens or Next.js auth routes.
+
+Seeded account (after first Compose seed): `test@example.com` / `password`.
 
 ### Dependency direction
 
