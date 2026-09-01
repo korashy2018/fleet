@@ -19,11 +19,11 @@ use Fleet\Domain\Trip\TripRepository;
 final class BookSeat
 {
     public function __construct(
-        private TripRepository $trips,
-        private BusRepository $buses,
-        private BookingRepository $bookings,
-        private SeatLock $lock,
-        private TransactionBoundary $transactions,
+        private TripRepository $tripRepository,
+        private BusRepository $busRepository,
+        private BookingRepository $bookingRepository,
+        private SeatLock $seatLock,
+        private TransactionBoundary $transactionBoundary,
     ) {
     }
 
@@ -35,7 +35,7 @@ final class BookSeat
         Passenger $passenger,
         ?int $userId = null,
     ): Booking {
-        return $this->lock->acquire($tripId, $seatNumber, function () use (
+        return $this->seatLock->acquire($tripId, $seatNumber, function () use (
             $tripId,
             $startStationId,
             $endStationId,
@@ -43,7 +43,7 @@ final class BookSeat
             $passenger,
             $userId,
         ): Booking {
-            return $this->transactions->run(function () use (
+            return $this->transactionBoundary->run(function () use (
                 $tripId,
                 $startStationId,
                 $endStationId,
@@ -51,13 +51,13 @@ final class BookSeat
                 $passenger,
                 $userId,
             ): Booking {
-                $trip = $this->trips->find($tripId);
+                $trip = $this->tripRepository->find($tripId);
 
                 if ($trip === null) {
                     throw TripNotFound::withId($tripId);
                 }
 
-                $bus = $this->buses->find($trip->busId);
+                $bus = $this->busRepository->find($trip->busId);
 
                 if ($bus === null) {
                     throw TripNotFound::withId($tripId);
@@ -70,13 +70,13 @@ final class BookSeat
                 }
 
                 $segment = $trip->segmentBetween($startStationId, $endStationId);
-                $existing = $this->bookings->forTripAndSeat($tripId, $seatNumber);
+                $existing = $this->bookingRepository->forTripAndSeat($tripId, $seatNumber);
 
                 if ((new SeatAvailability())->isOccupied($seat, $segment, $existing)) {
                     throw SeatUnavailable::onTrip($tripId, $seatNumber);
                 }
 
-                return $this->bookings->save(new Booking(
+                return $this->bookingRepository->save(new Booking(
                     0,
                     $trip->id,
                     $seatNumber,
