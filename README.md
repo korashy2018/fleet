@@ -308,8 +308,11 @@ cd backend
 php artisan test
 php artisan test --testsuite=Domain
 php artisan test tests/Feature/Api
+php artisan test --coverage --min=85
 php artisan test tests/Feature/Booking/RedisSeatLockTest.php
 ```
+
+CI fails if total coverage of `app/` and `src/` drops below **85%**. Local: `composer test:coverage`.
 
 The Redis lock test skips if Redis is not reachable on `127.0.0.1`. With Compose up, map `REDIS_HOST` for that one case or run it against the published Redis port.
 
