@@ -2,7 +2,9 @@ openapi: 3.0.3
 info:
   title: Fleet Booking API
   version: 1.0.0
-  description: Guest booking for Egypt city bus trips. Seat identity is (bus, number 1–12).
+  description: >-
+    Guest booking for Egypt city bus trips. Seat identity is (bus, number 1-12).
+    Envelope is {data} or {error: {code, message, details?}}.
 servers:
   - url: http://localhost:8000/api/v1
 paths:
@@ -12,6 +14,31 @@ paths:
       responses:
         '200':
           description: Catalog of trips with ordered stations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripList'
+              example:
+                data:
+                  - id: 1
+                    name: Cairo to Asyut
+                    bus_id: 1
+                    seat_count: 12
+                    stations:
+                      - { id: 1, name: Cairo, position: 0 }
+                      - { id: 3, name: Al Fayyum, position: 1 }
+                      - { id: 4, name: Al Minya, position: 2 }
+                      - { id: 5, name: Asyut, position: 3 }
+                  - id: 2
+                    name: Cairo to Asyut via Giza
+                    bus_id: 2
+                    seat_count: 12
+                    stations:
+                      - { id: 1, name: Cairo, position: 0 }
+                      - { id: 2, name: Giza, position: 1 }
+                      - { id: 3, name: Al Fayyum, position: 2 }
+                      - { id: 4, name: Al Minya, position: 3 }
+                      - { id: 5, name: Asyut, position: 4 }
   /trips/{trip}:
     get:
       summary: Get a trip
@@ -21,11 +48,35 @@ paths:
           required: true
           schema:
             type: integer
+          example: 1
       responses:
         '200':
           description: Trip with ordered stations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripEnvelope'
+              example:
+                data:
+                  id: 1
+                  name: Cairo to Asyut
+                  bus_id: 1
+                  seat_count: 12
+                  stations:
+                    - { id: 1, name: Cairo, position: 0 }
+                    - { id: 3, name: Al Fayyum, position: 1 }
+                    - { id: 4, name: Al Minya, position: 2 }
+                    - { id: 5, name: Asyut, position: 3 }
         '404':
           description: trip_not_found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: trip_not_found
+                  message: Trip 99 was not found.
   /trips/{trip}/available-seats:
     get:
       summary: Seat grid for a segment
@@ -35,23 +86,75 @@ paths:
           required: true
           schema:
             type: integer
+          example: 1
         - in: query
           name: start_station_id
           required: true
           schema:
             type: integer
+          example: 1
         - in: query
           name: end_station_id
           required: true
           schema:
             type: integer
+          example: 4
       responses:
         '200':
           description: Twelve seats with available true/false
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailableSeats'
+              example:
+                data:
+                  seats:
+                    - { number: 1, available: true }
+                    - { number: 2, available: true }
+                    - { number: 3, available: true }
+                    - { number: 4, available: true }
+                    - { number: 5, available: false }
+                    - { number: 6, available: true }
+                    - { number: 7, available: true }
+                    - { number: 8, available: true }
+                    - { number: 9, available: true }
+                    - { number: 10, available: true }
+                    - { number: 11, available: true }
+                    - { number: 12, available: true }
         '404':
           description: trip_not_found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: trip_not_found
+                  message: Trip 99 was not found.
         '422':
           description: validation_error, invalid_station, or invalid_station_order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                validation_error:
+                  value:
+                    error:
+                      code: validation_error
+                      message: The given data was invalid.
+                      details:
+                        start_station_id: ['The start station id field is required.']
+                invalid_station:
+                  value:
+                    error:
+                      code: invalid_station
+                      message: Station 2 is not on this trip.
+                invalid_station_order:
+                  value:
+                    error:
+                      code: invalid_station_order
+                      message: Segment start position 2 must be before end position 0.
   /bookings:
     post:
       summary: Book a seat on a trip segment (guest or Bearer)
@@ -63,39 +166,112 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: [trip_id, start_station_id, end_station_id, seat_number, passenger]
-              properties:
-                trip_id:
-                  type: integer
-                start_station_id:
-                  type: integer
-                end_station_id:
-                  type: integer
-                seat_number:
-                  type: integer
-                  minimum: 1
-                  maximum: 12
-                passenger:
-                  type: object
-                  required: [name, email]
-                  properties:
-                    name:
-                      type: string
-                    email:
-                      type: string
-                      format: email
+              $ref: '#/components/schemas/StoreBooking'
+            example:
+              trip_id: 1
+              start_station_id: 1
+              end_station_id: 4
+              seat_number: 6
+              passenger:
+                name: Omar Hassan
+                email: omar@example.com
       responses:
         '201':
           description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingEnvelope'
+              examples:
+                guest:
+                  summary: Guest booking
+                  value:
+                    data:
+                      id: 4
+                      trip_id: 1
+                      seat_number: 6
+                      start_station_id: 1
+                      end_station_id: 4
+                      start_position: 0
+                      end_position: 2
+                      user_id: null
+                      passenger:
+                        name: Omar Hassan
+                        email: omar@example.com
+                authenticated:
+                  summary: Bearer token stamps user_id
+                  value:
+                    data:
+                      id: 5
+                      trip_id: 1
+                      seat_number: 7
+                      start_station_id: 1
+                      end_station_id: 4
+                      start_position: 0
+                      end_position: 2
+                      user_id: 1
+                      passenger:
+                        name: Omar Hassan
+                        email: omar@example.com
         '404':
           description: trip_not_found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: trip_not_found
+                  message: Trip 99 was not found.
         '409':
           description: seat_unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: seat_unavailable
+                  message: Seat 5 is not available on trip 1 for that segment.
         '422':
           description: validation_error, invalid_station, invalid_station_order, or invalid_seat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                validation_error:
+                  value:
+                    error:
+                      code: validation_error
+                      message: The given data was invalid.
+                      details:
+                        seat_number: ['The seat number field is required.']
+                invalid_station:
+                  value:
+                    error:
+                      code: invalid_station
+                      message: Station 2 is not on this trip.
+                invalid_station_order:
+                  value:
+                    error:
+                      code: invalid_station_order
+                      message: Segment start position 2 must be before end position 0.
+                invalid_seat:
+                  value:
+                    error:
+                      code: invalid_seat
+                      message: Seat 13 is not on this trip's bus.
         '503':
           description: lock_unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: lock_unavailable
+                  message: Could not acquire the booking lock for trip 1 seat 6.
   /register:
     post:
       summary: Register and receive a Sanctum token
@@ -104,22 +280,37 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: [name, email, password]
-              properties:
-                name:
-                  type: string
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-                  minLength: 8
+              $ref: '#/components/schemas/Register'
+            example:
+              name: Omar Hassan
+              email: omar@example.com
+              password: password
       responses:
         '201':
           description: Token and user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenEnvelope'
+              example:
+                data:
+                  token: 1|abcdefghijklmnopqrstuvwxyz
+                  user:
+                    id: 1
+                    name: Omar Hassan
+                    email: omar@example.com
         '422':
           description: validation_error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: validation_error
+                  message: The given data was invalid.
+                  details:
+                    email: ['The email has already been taken.']
   /login:
     post:
       summary: Exchange credentials for a Sanctum token
@@ -128,21 +319,46 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: [email, password]
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
+              $ref: '#/components/schemas/Login'
+            example:
+              email: omar@example.com
+              password: password
       responses:
         '200':
           description: Token and user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenEnvelope'
+              example:
+                data:
+                  token: 2|abcdefghijklmnopqrstuvwxyz
+                  user:
+                    id: 1
+                    name: Omar Hassan
+                    email: omar@example.com
         '401':
           description: invalid_credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: invalid_credentials
+                  message: The provided credentials are incorrect.
         '422':
           description: validation_error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: validation_error
+                  message: The given data was invalid.
+                  details:
+                    email: ['The email field is required.']
   /me:
     get:
       summary: Current user
@@ -151,11 +367,220 @@ paths:
       responses:
         '200':
           description: Authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEnvelope'
+              example:
+                data:
+                  id: 1
+                  name: Omar Hassan
+                  email: omar@example.com
         '401':
           description: unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: unauthenticated
+                  message: Authentication is required.
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: Sanctum
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+    Station:
+      type: object
+      required: [id, name, position]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        position:
+          type: integer
+    Trip:
+      type: object
+      required: [id, name, bus_id, seat_count, stations]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        bus_id:
+          type: integer
+        seat_count:
+          type: integer
+          example: 12
+        stations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Station'
+    TripList:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trip'
+    TripEnvelope:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/Trip'
+    Seat:
+      type: object
+      required: [number, available]
+      properties:
+        number:
+          type: integer
+          minimum: 1
+          maximum: 12
+        available:
+          type: boolean
+    AvailableSeats:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [seats]
+          properties:
+            seats:
+              type: array
+              minItems: 12
+              maxItems: 12
+              items:
+                $ref: '#/components/schemas/Seat'
+    StoreBooking:
+      type: object
+      required: [trip_id, start_station_id, end_station_id, seat_number, passenger]
+      properties:
+        trip_id:
+          type: integer
+        start_station_id:
+          type: integer
+        end_station_id:
+          type: integer
+        seat_number:
+          type: integer
+          minimum: 1
+          maximum: 12
+        passenger:
+          type: object
+          required: [name, email]
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+              format: email
+    Booking:
+      type: object
+      required: [id, trip_id, seat_number, start_station_id, end_station_id, start_position, end_position, user_id, passenger]
+      properties:
+        id:
+          type: integer
+        trip_id:
+          type: integer
+        seat_number:
+          type: integer
+        start_station_id:
+          type: integer
+        end_station_id:
+          type: integer
+        start_position:
+          type: integer
+        end_position:
+          type: integer
+        user_id:
+          type: integer
+          nullable: true
+        passenger:
+          type: object
+          required: [name, email]
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+    BookingEnvelope:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/Booking'
+    Register:
+      type: object
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+    Login:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    User:
+      type: object
+      required: [id, name, email]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+    UserEnvelope:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/User'
+    TokenEnvelope:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [token, user]
+          properties:
+            token:
+              type: string
+            user:
+              $ref: '#/components/schemas/User'
+

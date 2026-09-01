@@ -25,6 +25,8 @@ final class OpenApiDocsTest extends TestCase
             ->assertOk()
             ->assertHeader('content-type', 'application/yaml; charset=UTF-8')
             ->assertSee('Fleet Booking API', false)
-            ->assertSee('/register', false);
+            ->assertSee('/register', false)
+            ->assertSee('seat_unavailable', false)
+            ->assertSee('user_id: null', false);
     }
 }
