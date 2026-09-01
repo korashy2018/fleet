@@ -8,6 +8,7 @@ use Fleet\Domain\Booking\Booking;
 use Fleet\Domain\Booking\Passenger;
 use Fleet\Domain\Booking\SeatAvailability;
 use Fleet\Domain\Bus\Bus;
+use Fleet\Domain\Bus\Seat;
 use Fleet\Domain\Trip\Trip;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -54,7 +55,7 @@ final class SeatAvailabilityTest extends TestCase
         $existing = [$this->booking(self::CAIRO, self::MINYA)];
         $requested = $this->trip->segmentBetween($start, $end);
         $available = $this->availability->availableSeats($requested, $this->bus->seats, $existing);
-        $numbers = array_map(fn ($seat): int => $seat->number, $available);
+        $numbers = array_map(fn (Seat $seat): int => $seat->number, $available);
 
         $this->assertSame($seatFiveAvailable, in_array(5, $numbers, true));
     }
@@ -82,14 +83,14 @@ final class SeatAvailabilityTest extends TestCase
     private function booking(int $start, int $end): Booking
     {
         return new Booking(
-            1,
-            $this->trip->id,
-            5,
-            $start,
-            $end,
-            $this->trip->segmentBetween($start, $end),
-            new Passenger('Mona Ali', 'mona@example.com'),
-            null,
+            id: 1,
+            tripId: $this->trip->id,
+            seatNumber: 5,
+            startStationId: $start,
+            endStationId: $end,
+            segment: $this->trip->segmentBetween($start, $end),
+            passenger: new Passenger('Mona Ali', 'mona@example.com'),
+            userId: null,
         );
     }
 }
