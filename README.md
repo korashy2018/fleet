@@ -2,6 +2,10 @@
 
 Golyv senior full-stack assessment: Egypt city bus booking. Laravel 13 API + Next.js 16.3.3. Postgres for this run; the schema and lock ports stay MySQL-switchable.
 
+Two guests book the same seat at the same instant. Redis holds `booking:{trip}:{seat}` so one write commits; the other waits, sees the occupied segment, and the UI shows **409**, clears the selection, and refreshes availability.
+
+![Two guests racing for the same seat](assets/booking-race.gif)
+
 | Path | Role |
 |---|---|
 | `backend/` | Laravel 13 API (PHP 8.4), domain in `src/` |
@@ -20,6 +24,7 @@ cp compose.env.example compose.env
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
 cd backend && composer install && cd ..
+cd frontend && npm install && cd ..
 docker compose --env-file compose.env up --build
 ```
 
@@ -46,7 +51,7 @@ docker compose --env-file compose.env down -v   # drop Postgres data too
 - API: http://localhost:8000/api/v1
 - **Swagger UI:** http://localhost:8000/docs
 - OpenAPI YAML: http://localhost:8000/docs/openapi.yaml
-- Web: http://localhost:3000
+- Web: http://localhost:3000 — guest booking workspace
 - Postgres / Redis: ports from `compose.env`
 
 ## API
