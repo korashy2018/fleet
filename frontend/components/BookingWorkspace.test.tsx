@@ -194,4 +194,26 @@ describe("BookingWorkspace", () => {
     expect(screen.getByLabelText("Email")).toHaveValue("omar@example.com");
     expect(screen.getByText(/linked to your account/i)).toBeInTheDocument();
   });
+
+  it("clears the booking selection on sign out", async () => {
+    useAuthStore.getState().setSession("1|secret", {
+      id: 1,
+      name: "Omar Hassan",
+      email: "omar@example.com",
+    });
+    const user = userEvent.setup();
+    renderWorkspace();
+
+    await chooseCairoToMinya(user);
+    await user.click(await screen.findByRole("button", { name: "1" }));
+    expect(screen.getByRole("button", { name: "1" })).toHaveClass("bg-seat-selected");
+
+    await user.click(screen.getByRole("button", { name: "Sign out" }));
+
+    expect(screen.getByLabelText("Trip")).toHaveValue("");
+    expect(screen.getByLabelText("Name")).toHaveValue("");
+    expect(screen.getByLabelText("Email")).toHaveValue("");
+    expect(screen.queryByRole("button", { name: "1" })).not.toBeInTheDocument();
+    expect(screen.queryByText(/linked to your account/i)).not.toBeInTheDocument();
+  });
 });
