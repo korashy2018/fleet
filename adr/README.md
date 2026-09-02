@@ -1,6 +1,6 @@
 # Architecture decisions
 
-Short records of choices that are easy to defend in review. Status is **accepted** unless noted.
+Diagrams and the hexagon live in [`ARCHITECTURE.md`](../ARCHITECTURE.md). These records are the choices that are easy to defend in review. Status is **accepted** unless noted.
 
 | # | Decision |
 |---|---|
