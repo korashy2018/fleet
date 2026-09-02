@@ -8,15 +8,19 @@ If we only have a few minutes, start with the race. Two guests submit the same s
 
 Reproduce it after Compose is up: open http://localhost:3000 in two windows, pick the same trip and segment, and book the same free seat. Seat 5 on trip 1 is already taken Cairo→Minya and free again from Minya onward.
 
-## Architecture decisions
+## Docs
 
-Diagrams and the hexagon live in [ARCHITECTURE.md](ARCHITECTURE.md). These records are the choices that are easy to defend in review. Status is **accepted** unless noted.
+| Doc | What |
+|---|---|
+| [PLAN.md](docs/PLAN.md) | Assessment working plan |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Hexagon, ports, booking sequence |
+| [adr/](docs/adr/README.md) | Accepted decisions |
 
 | # | Decision |
 |---|---|
-| [0001](adr/0001-redis-seat-lock.md) | Redis serializes booking writes; Postgres stays portable |
-| [0002](adr/0002-half-open-segments.md) | A booking occupies `[start, end)` |
-| [0003](adr/0003-query-builder-for-fleet-tables.md) | Query builder + mappers for fleet tables, not Eloquent |
+| [0001](docs/adr/0001-redis-seat-lock.md) | Redis serializes booking writes; Postgres stays portable |
+| [0002](docs/adr/0002-half-open-segments.md) | A booking occupies `[start, end)` |
+| [0003](docs/adr/0003-query-builder-for-fleet-tables.md) | Query builder + mappers for fleet tables, not Eloquent |
 
 ## Run
 

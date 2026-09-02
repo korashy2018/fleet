@@ -1,6 +1,6 @@
 # Architecture decisions
 
-Diagrams and the hexagon live in [`ARCHITECTURE.md`](../ARCHITECTURE.md). These records are the choices that are easy to defend in review. Status is **accepted** unless noted.
+Diagrams and the hexagon live in [`ARCHITECTURE.md`](../ARCHITECTURE.md). The working plan is [`PLAN.md`](../PLAN.md). These records are the choices that are easy to defend in review. Status is **accepted** unless noted.
 
 | # | Decision |
 |---|---|

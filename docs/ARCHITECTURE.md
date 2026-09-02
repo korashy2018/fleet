@@ -1,6 +1,6 @@
 # Architecture
 
-This is the review brief. Laravel is the host, not the model. Occupancy lives in `backend/src` (`Fleet\Domain`, `Fleet\Application`). HTTP, Redis, and SQL sit outside that core and are bound in `AppServiceProvider`. Domain tests boot PHPUnit only — no container, no Eloquent.
+This is the review brief. The working plan is [PLAN.md](PLAN.md). Laravel is the host, not the model. Occupancy lives in `backend/src` (`Fleet\Domain`, `Fleet\Application`). HTTP, Redis, and SQL sit outside that core and are bound in `AppServiceProvider`. Domain tests boot PHPUnit only — no container, no Eloquent.
 
 If we walk the code, start at `BookSeat` and `SeatAvailability`, then the Redis lock, then the HTTP envelope. The three decisions I will defend:
 
