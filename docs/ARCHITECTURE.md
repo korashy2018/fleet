@@ -2,11 +2,21 @@
 
 This is the review brief. The working plan is [PLAN.md](PLAN.md). Laravel is the host, not the model. Occupancy lives in `backend/src` (`Fleet\Domain`, `Fleet\Application`). HTTP, Redis, and SQL sit outside that core and are bound in `AppServiceProvider`. Domain tests boot PHPUnit only — no container, no Eloquent.
 
-If we walk the code, start at `BookSeat` and `SeatAvailability`, then the Redis lock, then the HTTP envelope. The three decisions I will defend:
+If we walk the code, start at `BookSeat` and `SeatAvailability`, then the Redis lock, then the HTTP envelope. Records: [0001](adr/0001-redis-seat-lock.md), [0002](adr/0002-half-open-segments.md), [0003](adr/0003-query-builder-for-fleet-tables.md).
 
-- [0001](adr/0001-redis-seat-lock.md) — Redis lock `booking:{trip}:{seat}`; fail closed (`503`) if Redis is down. Not a session store (`SESSION_DRIVER=file`), not an availability cache.
-- [0002](adr/0002-half-open-segments.md) — a booking occupies `[start, end)`. Adjacent handover does not overlap.
-- [0003](adr/0003-query-builder-for-fleet-tables.md) — query builder + mappers for fleet tables. `User` stays Eloquent for Sanctum, outside the fleet hexagon.
+## Justifications
+
+**Hexagon, not a Laravel app with models.** The problem is occupancy and a race, not CRUD. If overlap lives in a controller or an Eloquent observer, switching MySQL, swapping the lock, or testing without the container rewrites the rule. Ports (`SeatLock`, repositories, `TransactionBoundary`) let HTTP, SQL, and Redis change without touching `SeatAvailability`. Domain tests boot PHPUnit only. `Fleet\Domain` does not import `App\` or `Illuminate\`. Bindings in `AppServiceProvider` are the only place adapters are chosen.
+
+**Redis lock, not a Postgres lock.** The schema must stay MySQL-switchable. An advisory lock, `EXCLUDE`, or `int4range` would pin occupancy to one vendor. Redis is not stronger than Postgres. It is a portable mutex on `(trip, seat)` so two workers cannot run the occupancy check at the same time. The database still decides if the seat is free. Redis only serializes the writers. Sessions stay on the file driver.
+
+**Half-open `[start, end)`.** A trip is ordered stations, not a timetable. The same seat must sell Cairo→Minya and then Minya→Asyut. A closed `[start, end]` treats that handover as overlap. A unique `(trip, seat)` bans the second sale. Half-open means they only share an endpoint, so `a < d && c < b` is false. A Fayyum leg inside Cairo→Minya still overlaps. Station ids and positions are snapshotted on the booking row so a later route edit cannot rewrite history.
+
+**Query builder for fleet tables, not Eloquent.** Occupancy is a domain rule over already-loaded bookings, not an ORM callback. Eloquent would invite a `seats` table, implicit columns, and global scopes. Seat identity is `(busId, number)` 1–12 on the booking row. Query builder, explicit `select`, and mappers keep `Fleet\Domain` free of Laravel. `User` stays Eloquent because Sanctum’s guard expects it.
+
+**Fail closed if Redis is down.** No lock means no book. The API returns `503` / `lock_unavailable`. Booking without the lock is a race. TTL 15s is only so a crashed worker cannot pin a seat forever.
+
+**Availability is not cached.** `GET .../available-seats` may be slightly stale. Caching it in Redis would make the UI look fresh while the lock is what prevents a double book. `GetAvailableSeats` does not take the lock. After `409`, the UI clears the seat and refetches. The second writer already re-read occupancy under the lock — that is the source of truth, not a cached seat map.
 
 ## Hexagonal architecture
 
