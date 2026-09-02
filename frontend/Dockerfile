@@ -6,10 +6,12 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-RUN chown -R node:node /app
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh \
+    && chown -R node:node /app
 
 USER node
 
 EXPOSE 3000
 
-CMD ["npm", "run", "dev", "--", "-H", "0.0.0.0"]
+ENTRYPOINT ["entrypoint.sh"]
