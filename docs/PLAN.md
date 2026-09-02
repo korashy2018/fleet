@@ -129,15 +129,7 @@ OpenAPI lives at `backend/docs/openapi.yaml` (HTTP `/docs/openapi.yaml`).
 
 ## Phase 9 — what *does* go in git
 
-README, locking explanation, production notes. ADRs live in [`adr/`](adr/README.md).
-
-Interview answers to keep sharp:
-
-- Why Redis instead of Postgres locks (portability, not “Redis is stronger”).
-- Why `[start, end)`.
-- Why query builder instead of Eloquent for fleet tables.
-- What happens if Redis dies (fail closed, never book).
-- Why we do not cache availability.
+README, locking explanation, production notes. ADRs live in [`adr/`](adr/README.md). Justifications live in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ---
 
