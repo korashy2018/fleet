@@ -55,7 +55,7 @@
             "@php vendor/bin/phpunit --testsuite Domain"
         ],
         "test:coverage": [
-            "@php artisan test --coverage"
+            "@php artisan test --coverage --min=85"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
