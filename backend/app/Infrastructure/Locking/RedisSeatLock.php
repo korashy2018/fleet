@@ -15,14 +15,20 @@ final class RedisSeatLock implements SeatLock
 
     private const WAIT_SECONDS = 5;
 
+    public function __construct(
+        private readonly int $ttlSeconds = self::TTL_SECONDS,
+        private readonly int $waitSeconds = self::WAIT_SECONDS,
+    ) {
+    }
+
     public function acquire(int $tripId, int $seatNumber, callable $action): mixed
     {
         try {
             $lock = Cache::store('redis')->lock(
                 sprintf('booking:%d:%d', $tripId, $seatNumber),
-                self::TTL_SECONDS,
+                $this->ttlSeconds,
             );
-            $lock->block(self::WAIT_SECONDS);
+            $lock->block($this->waitSeconds);
         } catch (LockTimeoutException) {
             throw LockUnavailable::timeout($tripId, $seatNumber);
         } catch (\Throwable $e) {

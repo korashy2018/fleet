@@ -9,10 +9,13 @@ use Fleet\Application\Booking\LockUnavailable;
 use Fleet\Domain\Booking\Port\SeatLock;
 use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\Concerns\RequiresRedisCacheStore;
 use Tests\TestCase;
 
 final class RedisSeatLockTest extends TestCase
 {
+    use RequiresRedisCacheStore;
+
     #[Test]
     public function it_fails_closed_when_redis_cannot_be_reached(): void
     {
@@ -65,32 +68,5 @@ final class RedisSeatLockTest extends TestCase
         $this->assertTrue($ran);
         $this->assertSame('booked', $result);
         $this->assertTrue(Cache::store('redis')->lock('booking:1:9', 15)->get());
-    }
-
-    private function skipUnlessRedisStoreWorks(): void
-    {
-        $hosts = array_values(array_unique(array_filter([
-            (string) $this->app['config']->get('database.redis.default.host'),
-            '127.0.0.1',
-        ])));
-
-        foreach ($hosts as $host) {
-            try {
-                $this->app['config']->set('database.redis.default.host', $host);
-                $this->app['config']->set('database.redis.cache.host', $host);
-                $this->app->make('redis')->purge();
-                $this->app->forgetInstance('redis');
-                Cache::forgetDriver('redis');
-
-                Cache::store('redis')->put('fleet:lock-probe', '1', 5);
-                Cache::store('redis')->forget('fleet:lock-probe');
-
-                return;
-            } catch (\Throwable) {
-                continue;
-            }
-        }
-
-        $this->markTestSkipped('Redis is required for the cache lock test.');
     }
 }
