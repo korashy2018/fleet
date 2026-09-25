@@ -105,7 +105,7 @@ Do **not** add Eloquent models for fleet tables. Do **not** add `BookSeat` or Re
 - Port `SeatLock::acquire(tripId, seatNumber)` → Redis adapter (`Cache::lock`). Fail closed.
 - `BookSeat`: lock → DB transaction → load trip + bookings for that seat → domain overlap → insert → commit → release.
 - `GetAvailableSeats`: no lock; may be stale.
-- Redis lock is tested through the same PHPUnit case as the adapter: `Cache::store('redis')->lock()` is exclusive on `(trip, seat)`. Sequential `BookSeat` tests still use `PassThroughSeatLock`. Two OS workers are unnecessary for that lock proof.
+- Redis lock is exclusive on `(trip, seat)`. Sequential `BookSeat` tests still use `PassThroughSeatLock`. `ConcurrentBookingTest` covers the two-guest race: HTTP 201 then 409, TOCTOU without a mutex (two rows), mutex keeps the contender out (one row), and the Redis adapter path when Redis is up.
 
 ---
 
