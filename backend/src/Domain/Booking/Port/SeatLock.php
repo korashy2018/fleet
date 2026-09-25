@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fleet\Domain\Booking;
+namespace Fleet\Domain\Booking\Port;
 
 interface SeatLock
 {

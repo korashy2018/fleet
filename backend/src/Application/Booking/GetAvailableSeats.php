@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Fleet\Application\Booking;
 
-use Fleet\Domain\Booking\BookingRepository;
-use Fleet\Domain\Booking\SeatAvailability;
-use Fleet\Domain\Bus\BusRepository;
-use Fleet\Domain\Bus\Seat;
-use Fleet\Domain\Trip\TripNotFound;
-use Fleet\Domain\Trip\TripRepository;
+use Fleet\Domain\Booking\Port\BookingRepository;
+use Fleet\Domain\Booking\Service\SeatAvailability;
+use Fleet\Domain\Bus\Port\BusRepository;
+use Fleet\Domain\Bus\ValueObject\Seat;
+use Fleet\Domain\Trip\Exception\TripNotFound;
+use Fleet\Domain\Trip\Port\TripRepository;
 
 final class GetAvailableSeats
 {

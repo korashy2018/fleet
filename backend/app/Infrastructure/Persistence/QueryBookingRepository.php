@@ -6,7 +6,7 @@ namespace App\Infrastructure\Persistence;
 
 use App\Infrastructure\Persistence\Mappers\BookingMapper;
 use Fleet\Domain\Booking\Booking;
-use Fleet\Domain\Booking\BookingRepository;
+use Fleet\Domain\Booking\Port\BookingRepository;
 use Illuminate\Support\Facades\DB;
 
 final class QueryBookingRepository implements BookingRepository

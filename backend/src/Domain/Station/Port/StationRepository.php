@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Fleet\Domain\Station;
+namespace Fleet\Domain\Station\Port;
+
+use Fleet\Domain\Station\Station;
 
 interface StationRepository
 {

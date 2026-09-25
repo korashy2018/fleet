@@ -6,7 +6,7 @@ namespace Tests\Feature\Api;
 
 use App\Models\User;
 use Fleet\Application\Booking\LockUnavailable;
-use Fleet\Domain\Booking\SeatLock;
+use Fleet\Domain\Booking\Port\SeatLock;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Doubles\PassThroughSeatLock;

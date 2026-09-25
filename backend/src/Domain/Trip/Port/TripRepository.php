@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Fleet\Domain\Trip;
+namespace Fleet\Domain\Trip\Port;
+
+use Fleet\Domain\Trip\Trip;
 
 interface TripRepository
 {

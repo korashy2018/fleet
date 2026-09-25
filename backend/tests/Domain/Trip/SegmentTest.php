@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Domain\Trip;
 
-use Fleet\Domain\Trip\InvalidSegment;
-use Fleet\Domain\Trip\Segment;
+use Fleet\Domain\Trip\Exception\InvalidSegment;
+use Fleet\Domain\Trip\ValueObject\Segment;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

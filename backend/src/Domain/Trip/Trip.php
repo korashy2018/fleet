@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Fleet\Domain\Trip;
 
+use Fleet\Domain\Trip\Exception\StationNotOnTrip;
+use Fleet\Domain\Trip\ValueObject\Segment;
+
 final readonly class Trip
 {
     /**

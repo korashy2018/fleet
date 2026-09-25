@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Exceptions;
 
 use Fleet\Application\Booking\LockUnavailable;
-use Fleet\Domain\Booking\SeatUnavailable;
-use Fleet\Domain\Bus\InvalidSeat;
-use Fleet\Domain\Trip\InvalidSegment;
-use Fleet\Domain\Trip\StationNotOnTrip;
-use Fleet\Domain\Trip\TripNotFound;
+use Fleet\Domain\Booking\Exception\SeatUnavailable;
+use Fleet\Domain\Bus\Exception\InvalidSeat;
+use Fleet\Domain\Trip\Exception\InvalidSegment;
+use Fleet\Domain\Trip\Exception\StationNotOnTrip;
+use Fleet\Domain\Trip\Exception\TripNotFound;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

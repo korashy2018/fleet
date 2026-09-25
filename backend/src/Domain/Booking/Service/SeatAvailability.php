@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Fleet\Domain\Booking;
+namespace Fleet\Domain\Booking\Service;
 
-use Fleet\Domain\Bus\Seat;
-use Fleet\Domain\Trip\Segment;
+use Fleet\Domain\Booking\Booking;
+use Fleet\Domain\Bus\ValueObject\Seat;
+use Fleet\Domain\Trip\ValueObject\Segment;
 
 final class SeatAvailability
 {

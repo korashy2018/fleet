@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence;
 
 use Fleet\Domain\Bus\Bus;
-use Fleet\Domain\Bus\BusRepository;
+use Fleet\Domain\Bus\Port\BusRepository;
 use Illuminate\Support\Facades\DB;
 
 final class QueryBusRepository implements BusRepository

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Domain\Booking;
 
 use Fleet\Domain\Booking\Booking;
-use Fleet\Domain\Booking\Passenger;
-use Fleet\Domain\Booking\SeatAvailability;
+use Fleet\Domain\Booking\ValueObject\Passenger;
+use Fleet\Domain\Booking\Service\SeatAvailability;
 use Fleet\Domain\Bus\Bus;
-use Fleet\Domain\Bus\Seat;
+use Fleet\Domain\Bus\ValueObject\Seat;
 use Fleet\Domain\Trip\Trip;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;

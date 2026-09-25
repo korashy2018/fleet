@@ -9,11 +9,11 @@ use App\Infrastructure\Persistence\QueryBusRepository;
 use App\Infrastructure\Persistence\QueryStationRepository;
 use App\Infrastructure\Persistence\QueryTripRepository;
 use Fleet\Application\TransactionBoundary;
-use Fleet\Domain\Booking\BookingRepository;
-use Fleet\Domain\Booking\SeatLock;
-use Fleet\Domain\Bus\BusRepository;
-use Fleet\Domain\Station\StationRepository;
-use Fleet\Domain\Trip\TripRepository;
+use Fleet\Domain\Booking\Port\BookingRepository;
+use Fleet\Domain\Booking\Port\SeatLock;
+use Fleet\Domain\Bus\Port\BusRepository;
+use Fleet\Domain\Station\Port\StationRepository;
+use Fleet\Domain\Trip\Port\TripRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

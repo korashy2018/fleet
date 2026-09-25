@@ -6,12 +6,12 @@ namespace Tests\Feature\Persistence;
 
 use Database\Seeders\DatabaseSeeder;
 use Fleet\Domain\Booking\Booking;
-use Fleet\Domain\Booking\BookingRepository;
-use Fleet\Domain\Booking\Passenger;
+use Fleet\Domain\Booking\ValueObject\Passenger;
+use Fleet\Domain\Booking\Port\BookingRepository;
 use Fleet\Domain\Bus\Bus;
-use Fleet\Domain\Bus\BusRepository;
-use Fleet\Domain\Station\StationRepository;
-use Fleet\Domain\Trip\TripRepository;
+use Fleet\Domain\Bus\Port\BusRepository;
+use Fleet\Domain\Station\Port\StationRepository;
+use Fleet\Domain\Trip\Port\TripRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;

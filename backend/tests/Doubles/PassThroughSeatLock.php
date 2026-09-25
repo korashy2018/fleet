@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Doubles;
 
-use Fleet\Domain\Booking\SeatLock;
+use Fleet\Domain\Booking\Port\SeatLock;
 
 final class PassThroughSeatLock implements SeatLock
 {

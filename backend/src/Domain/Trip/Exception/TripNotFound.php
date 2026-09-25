@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fleet\Domain\Trip;
+namespace Fleet\Domain\Trip\Exception;
 
 final class TripNotFound extends \RuntimeException
 {
