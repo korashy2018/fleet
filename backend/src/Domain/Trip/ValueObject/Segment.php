@@ -22,4 +22,10 @@ final readonly class Segment
         return $this->startPosition < $other->endPosition
             && $other->startPosition < $this->endPosition;
     }
+
+    public function equals(self $other): bool
+    {
+        return $this->startPosition === $other->startPosition
+            && $this->endPosition === $other->endPosition;
+    }
 }

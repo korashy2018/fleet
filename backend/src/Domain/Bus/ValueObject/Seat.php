@@ -20,8 +20,9 @@ final readonly class Seat
         return $this->busId === $busId;
     }
 
-    public function isSameSeat(self $other): bool
+    public function equals(self $other): bool
     {
-        return $this->busId === $other->busId && $this->number === $other->number;
+        return $this->busId === $other->busId
+            && $this->number === $other->number;
     }
 }

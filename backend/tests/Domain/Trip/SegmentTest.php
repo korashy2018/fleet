@@ -39,4 +39,23 @@ final class SegmentTest extends TestCase
 
         new Segment(2, 2);
     }
+
+    #[Test]
+    public function segments_with_the_same_positions_are_equal(): void
+    {
+        $left = new Segment(0, 2);
+        $right = new Segment(0, 2);
+
+        $this->assertTrue($left->equals($right));
+        $this->assertTrue($right->equals($left));
+    }
+
+    #[Test]
+    public function segments_differ_when_any_attribute_differs(): void
+    {
+        $segment = new Segment(0, 2);
+
+        $this->assertFalse($segment->equals(new Segment(1, 2)));
+        $this->assertFalse($segment->equals(new Segment(0, 3)));
+    }
 }
