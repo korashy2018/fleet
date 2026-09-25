@@ -11,4 +11,10 @@ final readonly class Passenger
         public string $email,
     ) {
     }
+
+    public function equals(self $other): bool
+    {
+        return $this->name === $other->name
+            && $this->email === $other->email;
+    }
 }
