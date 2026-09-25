@@ -1,6 +1,6 @@
 # Architecture
 
-This is the review brief. The working plan is [PLAN.md](PLAN.md). Laravel is the host, not the model. Occupancy lives in `backend/src` (`Fleet\Domain`, `Fleet\Application`). HTTP, Redis, and SQL sit outside that core and are bound in `AppServiceProvider`. Domain tests boot PHPUnit only — no container, no Eloquent.
+This is the review brief. The working plan is [PLAN.md](PLAN.md). Schema: [ERD.md](ERD.md). Booking states: [STATE.md](STATE.md). Laravel is the host, not the model. Occupancy lives in `backend/src` (`Fleet\Domain`, `Fleet\Application`). HTTP, Redis, and SQL sit outside that core and are bound in `AppServiceProvider`. Domain tests boot PHPUnit only — no container, no Eloquent.
 
 If we walk the code, start at `BookSeat` and `SeatAvailability`, then the Redis lock, then the HTTP envelope. Records: [0001](adr/0001-redis-seat-lock.md), [0002](adr/0002-half-open-segments.md), [0003](adr/0003-query-builder-for-fleet-tables.md).
 
