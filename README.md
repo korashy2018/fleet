@@ -14,6 +14,8 @@ Reproduce it after Compose is up: open http://localhost:3000 in two windows, pic
 |---|---|
 | [PLAN.md](docs/PLAN.md) | Assessment working plan |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Hexagon, ports, booking sequence |
+| [ERD.md](docs/ERD.md) | Database entities and keys |
+| [STATE.md](docs/STATE.md) | Guest and race state machines |
 | [adr/](docs/adr/README.md) | Accepted decisions |
 
 | # | Decision |
