@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBookingRequest;
 use Fleet\Application\Booking\BookSeat;
 use Fleet\Domain\Booking\Booking;
-use Fleet\Domain\Booking\Passenger;
+use Fleet\Domain\Booking\ValueObject\Passenger;
 use Illuminate\Http\JsonResponse;
 
 final class BookingController extends Controller

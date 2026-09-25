@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Fleet\Domain\Bus;
 
+use Fleet\Domain\Bus\ValueObject\Seat;
+
 final readonly class Bus
 {
     public const SEAT_COUNT = 12;

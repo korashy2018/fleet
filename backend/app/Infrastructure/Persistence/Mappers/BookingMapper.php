@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence\Mappers;
 
 use Fleet\Domain\Booking\Booking;
-use Fleet\Domain\Booking\Passenger;
-use Fleet\Domain\Trip\Segment;
+use Fleet\Domain\Booking\ValueObject\Passenger;
+use Fleet\Domain\Trip\ValueObject\Segment;
 
 final class BookingMapper
 {

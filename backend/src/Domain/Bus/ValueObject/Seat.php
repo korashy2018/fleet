@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fleet\Domain\Bus;
+namespace Fleet\Domain\Bus\ValueObject;
 
 final readonly class Seat
 {

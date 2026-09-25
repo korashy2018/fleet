@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Fleet\Domain\Booking;
+namespace Fleet\Domain\Booking\Port;
+
+use Fleet\Domain\Booking\Booking;
 
 interface BookingRepository
 {

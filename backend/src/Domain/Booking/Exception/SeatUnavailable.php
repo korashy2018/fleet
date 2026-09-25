@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fleet\Domain\Booking;
+namespace Fleet\Domain\Booking\Exception;
 
 final class SeatUnavailable extends \RuntimeException
 {

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence;
 
 use App\Infrastructure\Persistence\Mappers\TripMapper;
+use Fleet\Domain\Trip\Port\TripRepository;
 use Fleet\Domain\Trip\Trip;
-use Fleet\Domain\Trip\TripRepository;
 use Illuminate\Support\Facades\DB;
 
 final class QueryTripRepository implements TripRepository

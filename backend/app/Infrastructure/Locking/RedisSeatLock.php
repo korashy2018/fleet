@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Locking;
 
 use Fleet\Application\Booking\LockUnavailable;
-use Fleet\Domain\Booking\SeatLock;
+use Fleet\Domain\Booking\Port\SeatLock;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\Cache;
 

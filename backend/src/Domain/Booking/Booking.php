@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Fleet\Domain\Booking;
 
-use Fleet\Domain\Trip\Segment;
+use Fleet\Domain\Booking\ValueObject\Passenger;
+use Fleet\Domain\Trip\ValueObject\Segment;
 
 final readonly class Booking
 {

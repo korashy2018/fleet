@@ -8,10 +8,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ListAvailableSeatsRequest;
 use Fleet\Application\Booking\GetAvailableSeats;
 use Fleet\Domain\Bus\Bus;
-use Fleet\Domain\Station\StationRepository;
+use Fleet\Domain\Station\Port\StationRepository;
+use Fleet\Domain\Trip\Exception\TripNotFound;
+use Fleet\Domain\Trip\Port\TripRepository;
 use Fleet\Domain\Trip\Trip;
-use Fleet\Domain\Trip\TripNotFound;
-use Fleet\Domain\Trip\TripRepository;
 use Illuminate\Http\JsonResponse;
 
 final class TripController extends Controller

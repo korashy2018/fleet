@@ -46,10 +46,20 @@ Architecture diagrams: [ARCHITECTURE.md](ARCHITECTURE.md). Decisions: [adr/](adr
 ```
 backend/src/Domain/
   Station/Station.php
-  Bus/Seat.php, Bus.php          # Bus::withTwelveSeats, seat(n)
-  Trip/Segment.php, Trip.php     # define(...stationIds), segmentBetween, positionOf
-  Trip/InvalidSegment.php, StationNotOnTrip.php
-  Booking/Passenger.php, Booking.php, SeatAvailability.php
+  Station/Port/StationRepository.php
+  Bus/Bus.php
+  Bus/ValueObject/Seat.php
+  Bus/Port/BusRepository.php
+  Bus/Exception/InvalidSeat.php
+  Trip/Trip.php
+  Trip/ValueObject/Segment.php
+  Trip/Port/TripRepository.php
+  Trip/Exception/InvalidSegment.php, StationNotOnTrip.php, TripNotFound.php
+  Booking/Booking.php
+  Booking/ValueObject/Passenger.php
+  Booking/Service/SeatAvailability.php
+  Booking/Port/BookingRepository.php, SeatLock.php
+  Booking/Exception/SeatUnavailable.php
 ```
 
 Seat 5 Cairo→Minya blocks Fayyum legs on that seat and leaves Minya→Asyut free.
@@ -76,10 +86,10 @@ Seat 5 Cairo→Minya blocks Fayyum legs on that seat and leaves Minya→Asyut fr
 | File | Role |
 |---|---|
 | `backend/database/migrations/xxxx_create_fleet_tables.php` | Portable catalog + bookings |
-| `backend/src/Domain/Trip/TripRepository.php` | Port: find / all |
-| `backend/src/Domain/Booking/BookingRepository.php` | Port: forTrip, forTripAndSeat, save |
-| `backend/src/Domain/Station/StationRepository.php` | Port: find / all |
-| `backend/src/Domain/Bus/BusRepository.php` | Port: find → `Bus::withTwelveSeats` |
+| `backend/src/Domain/Trip/Port/TripRepository.php` | Port: find / all |
+| `backend/src/Domain/Booking/Port/BookingRepository.php` | Port: forTrip, forTripAndSeat, save |
+| `backend/src/Domain/Station/Port/StationRepository.php` | Port: find / all |
+| `backend/src/Domain/Bus/Port/BusRepository.php` | Port: find → `Bus::withTwelveSeats` |
 | `backend/app/Infrastructure/Persistence/Mappers/*.php` | Row ↔ domain |
 | `backend/app/Infrastructure/Persistence/Query*Repository.php` | `DB::table` + explicit `select` |
 | `backend/app/Providers/AppServiceProvider.php` | Bind ports |

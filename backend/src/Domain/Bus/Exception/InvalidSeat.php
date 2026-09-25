@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fleet\Domain\Bus;
+namespace Fleet\Domain\Bus\Exception;
 
 final class InvalidSeat extends \InvalidArgumentException
 {

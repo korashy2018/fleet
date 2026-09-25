@@ -6,7 +6,7 @@ namespace Tests\Feature\Booking;
 
 use App\Infrastructure\Locking\RedisSeatLock;
 use Fleet\Application\Booking\LockUnavailable;
-use Fleet\Domain\Booking\SeatLock;
+use Fleet\Domain\Booking\Port\SeatLock;
 use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;

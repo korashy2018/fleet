@@ -6,15 +6,15 @@ namespace Fleet\Application\Booking;
 
 use Fleet\Application\TransactionBoundary;
 use Fleet\Domain\Booking\Booking;
-use Fleet\Domain\Booking\BookingRepository;
-use Fleet\Domain\Booking\Passenger;
-use Fleet\Domain\Booking\SeatAvailability;
-use Fleet\Domain\Booking\SeatLock;
-use Fleet\Domain\Booking\SeatUnavailable;
-use Fleet\Domain\Bus\BusRepository;
-use Fleet\Domain\Bus\InvalidSeat;
-use Fleet\Domain\Trip\TripNotFound;
-use Fleet\Domain\Trip\TripRepository;
+use Fleet\Domain\Booking\Exception\SeatUnavailable;
+use Fleet\Domain\Booking\Port\BookingRepository;
+use Fleet\Domain\Booking\Port\SeatLock;
+use Fleet\Domain\Booking\Service\SeatAvailability;
+use Fleet\Domain\Booking\ValueObject\Passenger;
+use Fleet\Domain\Bus\Exception\InvalidSeat;
+use Fleet\Domain\Bus\Port\BusRepository;
+use Fleet\Domain\Trip\Exception\TripNotFound;
+use Fleet\Domain\Trip\Port\TripRepository;
 
 final class BookSeat
 {

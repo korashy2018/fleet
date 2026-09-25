@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Fleet\Domain\Trip;
+namespace Fleet\Domain\Trip\ValueObject;
+
+use Fleet\Domain\Trip\Exception\InvalidSegment;
 
 final readonly class Segment
 {
